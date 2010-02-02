@@ -115,8 +115,8 @@ public class TypedBytesSequenceFileLoader implements LoadFunc, SamplableLoader {
   public Tuple getNext() throws IOException {
     if (reader != null && (reader.getPosition() < end || !reader.syncSeen()) && reader.next(key, value)) {
     	Tuple tuple =  tupleFactory.newTuple(2);
-      tuple.set(0, new DataByteArray(key.get(), 0, key.getSize()));
-      tuple.set(1, new DataByteArray(value.get(), 0, value.getSize()));
+      tuple.set(0, new DataByteArray(key.getBytes(), 0, key.getLength()));
+      tuple.set(1, new DataByteArray(value.getBytes(), 0, value.getLength()));
       return tuple;
     }
     return null;
