@@ -19,29 +19,16 @@
 package fm.last.pigtail.storage;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BooleanWritable;
-import org.apache.hadoop.io.ByteWritable;
-import org.apache.hadoop.io.DoubleWritable;
-import org.apache.hadoop.io.FloatWritable;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.SequenceFile;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.typedbytes.TypedBytesInput;
-import org.apache.hadoop.typedbytes.TypedBytesOutput;
 import org.apache.hadoop.typedbytes.TypedBytesWritable;
 import org.apache.hadoop.util.ReflectionUtils;
 
@@ -52,7 +39,6 @@ import org.apache.pig.backend.datastorage.DataStorage;
 import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.PigMapReduce;
 import org.apache.pig.data.DataBag;
 import org.apache.pig.data.DataByteArray;
-import org.apache.pig.data.DataType;
 import org.apache.pig.data.Tuple;
 import org.apache.pig.data.TupleFactory;
 import org.apache.pig.impl.io.BufferedPositionedInputStream;
@@ -231,73 +217,5 @@ public class TypedBytesSequenceFileLoader implements LoadFunc, SamplableLoader {
   	}
   	return result;
   }
-  
-  /*
-
-  public byte[] toBytes(DataBag bag) throws IOException {
-  	throw new FrontendException("Converting a bag is not supported.");
-  }
-
-  public byte[] toBytes(String s) throws IOException {
-  	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(baos);
-    TypedBytesOutput tbout = TypedBytesOutput.get(dos);
-    tbout.writeString(s);
-    return baos.toByteArray();
-  }
-
-  public byte[] toBytes(Double d) throws IOException {
-  	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(baos);
-    TypedBytesOutput tbout = TypedBytesOutput.get(dos);
-    tbout.writeDouble(d);
-    return baos.toByteArray();
-  }
-
-  public byte[] toBytes(Float f) throws IOException {
-  	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(baos);
-    TypedBytesOutput tbout = TypedBytesOutput.get(dos);
-    tbout.writeFloat(f);
-    return baos.toByteArray();
-  }
-
-  public byte[] toBytes(Integer i) throws IOException {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(baos);
-    TypedBytesOutput tbout = TypedBytesOutput.get(dos);
-    tbout.writeInt(i);
-    return baos.toByteArray();
-  }
-
-  public byte[] toBytes(Long l) throws IOException {
-  	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(baos);
-    TypedBytesOutput tbout = TypedBytesOutput.get(dos);
-    tbout.writeLong(l);
-    return baos.toByteArray();
-  }
-
-  public byte[] toBytes(Map<String, Object> m) throws IOException {
-  	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(baos);
-    TypedBytesOutput tbout = TypedBytesOutput.get(dos);
-    tbout.writeMap(m);
-    return baos.toByteArray();
-  }
-
-  public byte[] toBytes(Tuple t) throws IOException {
-  	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(baos);
-    TypedBytesOutput tbout = TypedBytesOutput.get(dos);
-    ArrayList<Object> vector = new ArrayList<Object>();
-    for (int i = 0; i < t.size(); i++) {
-    	vector.add(t.get(i));
-    }
-    tbout.writeVector(vector);
-    return baos.toByteArray();
-  }
-  
-  */
   
 }
