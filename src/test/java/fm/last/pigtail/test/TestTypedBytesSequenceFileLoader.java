@@ -25,29 +25,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
 
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.SequenceFile;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.typedbytes.TypedBytesWritable;
 import org.apache.pig.PigServer;
 import org.apache.pig.data.Tuple;
 import org.apache.pig.data.TupleFactory;
-//import org.apache.pig.test.PigExecTestCase;
-import org.apache.pig.data.TupleFactory;
 
 
-//public class TestSequenceFileLoader extends PigExecTestCase  {
 public class TestTypedBytesSequenceFileLoader extends TestCase {
   
   private PigServer pigServer;
