@@ -45,62 +45,62 @@ import org.apache.pig.impl.io.BufferedPositionedInputStream;
 import org.apache.pig.impl.logicalLayer.FrontendException;
 import org.apache.pig.impl.logicalLayer.schema.Schema;
 
-
 public class TypedBytesSequenceFileLoader implements LoadFunc, SamplableLoader {
 
-	private SequenceFile.Reader reader = null;
-	private long end;
-	
-	private TypedBytesWritable key, value; 
-	
-	private TupleFactory tupleFactory = TupleFactory.getInstance();
-	
-	
-	public TypedBytesSequenceFileLoader() {
-		// nothing to do here
-	}
-	
-	public void bindTo(String fileName, BufferedPositionedInputStream is,
-		long offset, long end) throws IOException {
-		
-		if (reader == null) {
+  private SequenceFile.Reader reader = null;
+  private long end;
+
+  private TypedBytesWritable key, value;
+
+  private TupleFactory tupleFactory = TupleFactory.getInstance();
+
+  public TypedBytesSequenceFileLoader() {
+    // nothing to do here
+  }
+
+  public void bindTo(String fileName, BufferedPositionedInputStream is,
+      long offset, long end) throws IOException {
+
+    if (reader == null) {
       Configuration conf = new Configuration();
       Path path = new Path(fileName);
       FileSystem fs = FileSystem.get(path.toUri(), conf);
       reader = new SequenceFile.Reader(fs, path, conf);
     }
-		
+
     if (offset != 0)
       reader.sync(offset);
 
     this.end = end;
-    
-    try {
-      this.key = (TypedBytesWritable) ReflectionUtils.newInstance(reader.getKeyClass(), PigMapReduce.sJobConf);
-      this.value = (TypedBytesWritable) ReflectionUtils.newInstance(reader.getValueClass(), PigMapReduce.sJobConf);
-    } catch (ClassCastException e) {
-      throw new RuntimeException("SequenceFile contains non-TypedBytesWritable objects", e);
-    }
-	}
 
-	
-	@Override
+    try {
+      this.key = (TypedBytesWritable) ReflectionUtils.newInstance(reader
+          .getKeyClass(), PigMapReduce.sJobConf);
+      this.value = (TypedBytesWritable) ReflectionUtils.newInstance(reader
+          .getValueClass(), PigMapReduce.sJobConf);
+    } catch (ClassCastException e) {
+      throw new RuntimeException(
+          "SequenceFile contains non-TypedBytesWritable objects", e);
+    }
+  }
+
+  @Override
   public Schema determineSchema(String fileName, ExecType execType,
       DataStorage storage) throws IOException {
-	  // we cannot determine the schema in general
-	  return null;
+    // we cannot determine the schema in general
+    return null;
   }
 
-	@Override
+  @Override
   public void fieldsToRead(Schema schema) {
-		// do nothing
+    // do nothing
   }
 
-	
-	@Override
+  @Override
   public Tuple getNext() throws IOException {
-    if (reader != null && (reader.getPosition() < end || !reader.syncSeen()) && reader.next(key, value)) {
-    	Tuple tuple =  tupleFactory.newTuple(2);
+    if (reader != null && (reader.getPosition() < end || !reader.syncSeen())
+        && reader.next(key, value)) {
+      Tuple tuple = tupleFactory.newTuple(2);
       tuple.set(0, new DataByteArray(key.getBytes(), 0, key.getLength()));
       tuple.set(1, new DataByteArray(value.getBytes(), 0, value.getLength()));
       return tuple;
@@ -108,7 +108,6 @@ public class TypedBytesSequenceFileLoader implements LoadFunc, SamplableLoader {
     return null;
   }
 
-	
   @Override
   public long getPosition() throws IOException {
     return reader.getPosition();
@@ -122,100 +121,99 @@ public class TypedBytesSequenceFileLoader implements LoadFunc, SamplableLoader {
   @Override
   public long skip(long n) throws IOException {
     long startPos = reader.getPosition();
-    reader.sync(startPos+n);
-    return reader.getPosition()-startPos;
+    reader.sync(startPos + n);
+    return reader.getPosition() - startPos;
   }
 
-  
   @Override
   public DataBag bytesToBag(byte[] b) throws IOException {
-  	throw new FrontendException("Casting to bag is not supported.");
+    throw new FrontendException("Casting to bag is not supported.");
   }
 
   @Override
   public String bytesToCharArray(byte[] b) throws IOException {
-  	ByteArrayInputStream bais = new ByteArrayInputStream(b);
-  	DataInputStream dis = new DataInputStream(bais);
-  	TypedBytesInput tbin = TypedBytesInput.get(dis);
-  	if (tbin.readType() != org.apache.hadoop.typedbytes.Type.STRING) {
-  		throw new FrontendException("Type code does not correspond to string.");
-  	}
-  	return tbin.readString();
+    ByteArrayInputStream bais = new ByteArrayInputStream(b);
+    DataInputStream dis = new DataInputStream(bais);
+    TypedBytesInput tbin = TypedBytesInput.get(dis);
+    if (tbin.readType() != org.apache.hadoop.typedbytes.Type.STRING) {
+      throw new FrontendException("Type code does not correspond to string.");
+    }
+    return tbin.readString();
   }
 
   @Override
   public Double bytesToDouble(byte[] b) throws IOException {
-  	ByteArrayInputStream bais = new ByteArrayInputStream(b);
-  	DataInputStream dis = new DataInputStream(bais);
-  	TypedBytesInput tbin = TypedBytesInput.get(dis);
-  	if (tbin.readType() != org.apache.hadoop.typedbytes.Type.DOUBLE) {
-  		throw new FrontendException("Type code does not correspond to double.");
-  	}
-  	return tbin.readDouble();
+    ByteArrayInputStream bais = new ByteArrayInputStream(b);
+    DataInputStream dis = new DataInputStream(bais);
+    TypedBytesInput tbin = TypedBytesInput.get(dis);
+    if (tbin.readType() != org.apache.hadoop.typedbytes.Type.DOUBLE) {
+      throw new FrontendException("Type code does not correspond to double.");
+    }
+    return tbin.readDouble();
   }
 
   @Override
   public Float bytesToFloat(byte[] b) throws IOException {
-  	ByteArrayInputStream bais = new ByteArrayInputStream(b);
-  	DataInputStream dis = new DataInputStream(bais);
-  	TypedBytesInput tbin = TypedBytesInput.get(dis);
-  	if (tbin.readType() != org.apache.hadoop.typedbytes.Type.FLOAT) {
-  		throw new FrontendException("Type code does not correspond to float.");
-  	}
-  	return tbin.readFloat();
+    ByteArrayInputStream bais = new ByteArrayInputStream(b);
+    DataInputStream dis = new DataInputStream(bais);
+    TypedBytesInput tbin = TypedBytesInput.get(dis);
+    if (tbin.readType() != org.apache.hadoop.typedbytes.Type.FLOAT) {
+      throw new FrontendException("Type code does not correspond to float.");
+    }
+    return tbin.readFloat();
   }
 
   @Override
   public Integer bytesToInteger(byte[] b) throws IOException {
-  	ByteArrayInputStream bais = new ByteArrayInputStream(b);
-  	DataInputStream dis = new DataInputStream(bais);
-  	TypedBytesInput tbin = TypedBytesInput.get(dis);
-  	if (tbin.readType() != org.apache.hadoop.typedbytes.Type.INT) {
-  		throw new FrontendException("Type code does not correspond to int.");
-  	}
-  	return tbin.readInt();
+    ByteArrayInputStream bais = new ByteArrayInputStream(b);
+    DataInputStream dis = new DataInputStream(bais);
+    TypedBytesInput tbin = TypedBytesInput.get(dis);
+    if (tbin.readType() != org.apache.hadoop.typedbytes.Type.INT) {
+      throw new FrontendException("Type code does not correspond to int.");
+    }
+    return tbin.readInt();
   }
 
   @Override
   public Long bytesToLong(byte[] b) throws IOException {
-  	ByteArrayInputStream bais = new ByteArrayInputStream(b);
-  	DataInputStream dis = new DataInputStream(bais);
-  	TypedBytesInput tbin = TypedBytesInput.get(dis);
-  	if (tbin.readType() != org.apache.hadoop.typedbytes.Type.LONG) {
-  		throw new FrontendException("Type code does not correspond to long.");
-  	}
-  	return tbin.readLong();
+    ByteArrayInputStream bais = new ByteArrayInputStream(b);
+    DataInputStream dis = new DataInputStream(bais);
+    TypedBytesInput tbin = TypedBytesInput.get(dis);
+    if (tbin.readType() != org.apache.hadoop.typedbytes.Type.LONG) {
+      throw new FrontendException("Type code does not correspond to long.");
+    }
+    return tbin.readLong();
   }
 
   @Override
   public Map<String, Object> bytesToMap(byte[] b) throws IOException {
-  	ByteArrayInputStream bais = new ByteArrayInputStream(b);
-  	DataInputStream dis = new DataInputStream(bais);
-  	TypedBytesInput tbin = TypedBytesInput.get(dis);
-  	if (tbin.readType() != org.apache.hadoop.typedbytes.Type.MAP) {
-  		throw new FrontendException("Type code does not correspond to map.");
-  	}
-  	Map<String, Object> result = new HashMap<String, Object>();
-  	for (Object item : tbin.readMap().entrySet()) {
-  		Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) item;
-  		result.put(entry.getKey().toString(), entry.getValue());
-  	}
-  	return result;
+    ByteArrayInputStream bais = new ByteArrayInputStream(b);
+    DataInputStream dis = new DataInputStream(bais);
+    TypedBytesInput tbin = TypedBytesInput.get(dis);
+    if (tbin.readType() != org.apache.hadoop.typedbytes.Type.MAP) {
+      throw new FrontendException("Type code does not correspond to map.");
+    }
+    Map<String, Object> result = new HashMap<String, Object>();
+    for (Object item : tbin.readMap().entrySet()) {
+      Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) item;
+      result.put(entry.getKey().toString(), entry.getValue());
+    }
+    return result;
   }
 
   @Override
   public Tuple bytesToTuple(byte[] b) throws IOException {
-  	ByteArrayInputStream bais = new ByteArrayInputStream(b);
-  	DataInputStream dis = new DataInputStream(bais);
-  	TypedBytesInput tbin = TypedBytesInput.get(dis);
-  	if (tbin.readType() != org.apache.hadoop.typedbytes.Type.VECTOR) {
-  		throw new FrontendException("Type code does not correspond to vector.");
-  	}
-  	Tuple result = tupleFactory.newTuple();
-  	for (Object item : tbin.readVector()) {
-  		result.append(item);
-  	}
-  	return result;
+    ByteArrayInputStream bais = new ByteArrayInputStream(b);
+    DataInputStream dis = new DataInputStream(bais);
+    TypedBytesInput tbin = TypedBytesInput.get(dis);
+    if (tbin.readType() != org.apache.hadoop.typedbytes.Type.VECTOR) {
+      throw new FrontendException("Type code does not correspond to vector.");
+    }
+    Tuple result = tupleFactory.newTuple();
+    for (Object item : tbin.readVector()) {
+      result.append(item);
+    }
+    return result;
   }
-  
+
 }
